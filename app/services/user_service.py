@@ -27,33 +27,25 @@ class UserService:
      
 
     def get(self, user_id :int):
-        try:    
-            if self.__unit_repo.get(user_id) == None:
-               raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail= {"mensagem":"usuário não encontrado"})  
+        if self.__unit_repo.get(user_id) == None:
+            raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail= {"mensagem":"usuário não encontrado"})  
 
-            return self.__unit_repo.get(user_id)
-        except Exception as e:
-            raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR , detail= {"mensagem":e})  
+        return self.__unit_repo.get(user_id)
            
 
     def update(self, user_id :int,data : UserCreate):
 
-        try:
-            user_model  = self.__unit_repo.update(user_id,data)
-            if user_model == None:
-                    raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail= {"mensagem":"usuário não encontrado"})  
+        user_model  = self.__unit_repo.update(user_id,data)
+        if user_model == None:
+                raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail= {"mensagem":"usuário não encontrado"})  
 
-            return user_model
-        except  Exception as e:
-            raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR , detail= {"mensagem":e})  
-              
+        return user_model
+            
 
     def delete(self, user_id :int):
-        
-        try:
-            if  self.__unit_repo.delete(user_id) == False:
-                    raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail= {"mensagem":"usuário não encontrado"})  
+
+        if  self.__unit_repo.delete(user_id) == False:
+            raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail= {"mensagem":"usuário não encontrado"})  
             
-        except  Exception as e:
-            raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR , detail= {"mensagem":e})  
+        return {"mensagem":"deletado com sucesso"}
                   
