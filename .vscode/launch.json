@@ -1,0 +1,21 @@
+  {
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Python: FastAPI (Uvicorn)",
+      "type": "python",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": [
+        "app.main:app",         // Replace 'main' with your filename and 'app' with your FastAPI instance
+        "--reload"         // Optional: enables auto-reload
+
+      ],
+      "jinja": true,
+      "console": "integratedTerminal",
+       "env": {
+        "PYTHONDONTWRITEBYTECODE": "1"
+      }
+    }
+  ]
+}
