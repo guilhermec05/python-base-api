@@ -36,6 +36,8 @@ class UserRepository:
        
        return user_model    
 
+    def get_user_by_email(self,email:str):
+        return self.__session.exec(select(User).where(User.email == email)).first()
 
     def delete(self,id :int):
         user_model = self.get(id)

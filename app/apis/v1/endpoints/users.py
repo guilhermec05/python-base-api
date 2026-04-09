@@ -1,33 +1,50 @@
 
 from http import HTTPStatus
-from fastapi import APIRouter,Depends,HTTPException
-from sqlmodel import Session 
+from fastapi import APIRouter,Depends
 from app.services.user_service import UserService
-from app.schemas.user import UserRead,UserCreate
+from app.schemas.user import UserRead,UserCreate, UserUpdate
 from app.apis.deps import get_user_service
 from .base_endpoint import result
+from app.core.security import get_current_user,permission_router
 
-router = APIRouter(prefix="/users", tags=["Users"])
+router = APIRouter(prefix="/users", tags=["Users"],dependencies=[Depends(get_current_user)])
 
-@router.post("/",status_code=HTTPStatus.CREATED,response_model=UserRead)
-def create_user(data: UserCreate , session : UserService = Depends(get_user_service)):
+@router.post("/",status_code=HTTPStatus.CREATED,
+             response_model=UserRead
+            )
+def create_user(data: UserCreate , 
+                session : UserService = Depends(get_user_service),
+                user = Depends(permission_router(roles=["A","N"]))
+                ):
     return result(session.create(data))
 
 @router.get("/",status_code=HTTPStatus.OK,response_model=list[UserRead])
-def get_list(session : UserService =  Depends(get_user_service)):
+def get_list(session : UserService =  Depends(get_user_service), 
+            user = Depends(permission_router(roles=["A","N"]))):
     return result(session.get_all())
 
 
-@router.get("/{user_id}",status_code=HTTPStatus.OK,response_model=UserRead)
-def get_list(user_id : int, session : UserService =  Depends(get_user_service)):
+@router.get("/{user_id}",status_code=HTTPStatus.OK,
+            response_model=UserRead
+)           
+def get_list(user_id : int, 
+             session : UserService =  Depends(get_user_service),
+             user = Depends(permission_router(roles=["A","N"]))
+             ):
     return result(session.get(user_id))
 
 
 @router.put("/{user_id}",status_code=HTTPStatus.OK,response_model=UserRead)
-def update_user(user_id : int,data: UserCreate  ,session : UserService =  Depends(get_user_service)):
+def update_user(user_id : int,
+                data: UserUpdate  ,
+                session : UserService =  Depends(get_user_service),
+                user = Depends(permission_router(roles=["A"]))
+                ):
     return result(session.update(user_id,data))
 
 
 @router.delete("/{user_id}",status_code=HTTPStatus.OK)
-def get_list(user_id : int, session : UserService =  Depends(get_user_service)):  
+def get_list(user_id : int, 
+             session : UserService =  Depends(get_user_service),
+             user = Depends(permission_router(roles=["A"]))):  
     return result(session.delete(user_id))

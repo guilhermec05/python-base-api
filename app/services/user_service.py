@@ -3,6 +3,8 @@ from http import HTTPStatus
 from app.repositories.user_repository import UserRepository
 from app.schemas.user import UserCreate
 from app.models.user import User
+from app.core.security import get_password_hash
+
 
 class UserService:
 
@@ -11,19 +13,21 @@ class UserService:
 
     def create(self, data : UserCreate):
 
-        try:
-            user_model = User(**data.model_dump())
-            return self.__unit_repo.create(user_model)
-        except Exception as e:
-            raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR , detail= {"mensagem":e})  
-             
+        data.password = get_password_hash(data.password)
+
+        user_model = User(**data.model_dump())
+        user_exists = self.__unit_repo.get_user_by_email(user_model.email)
+        
+        if user_exists != None:
+            raise HTTPException(status_code=HTTPStatus.CONFLICT , detail= {"mensagem":"usuários existente"})
+    
+        return self.__unit_repo.create(user_model)
+    
+     
        
     
     def get_all(self):
-        try:
-            return self.__unit_repo.list()
-        except Exception as e:
-            raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR , detail= {"mensagem":e})  
+        return self.__unit_repo.list()
      
 
     def get(self, user_id :int):
